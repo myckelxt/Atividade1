@@ -1,5 +1,13 @@
-public class cadastroVIEW extends javax.swing.JFrame {
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
+
+public class cadastroVIEW extends javax.swing.JFrame {
+ 
     /**
      * Creates new form cadastroVIEW
      */
@@ -131,17 +139,26 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
-        String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Integer.parseInt(valor));
-        produto.setStatus(status);
-        
-        ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        
+                                          
+    String nome = cadastroNome.getText();
+    int valor = Integer.parseInt(cadastroValor.getText());
+    String status = "A Venda"; // Definindo o status como "A Venda"
+
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11", "usuario", "1234")) {
+        String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nome);
+            stmt.setInt(2, valor);
+            stmt.setString(3, status);
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Erro ao cadastrar: " + e.getMessage());
+    }
+
+
+    
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed
