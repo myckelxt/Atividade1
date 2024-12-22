@@ -1,6 +1,13 @@
 
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane; 
+import javax.swing.table.DefaultTableModel;
 
 public class listagemVIEW extends javax.swing.JFrame {
 
@@ -144,6 +151,29 @@ public class listagemVIEW extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
 
+private void carregarDados() {
+    try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11", "usuario", "senha")) {
+        String sql = "SELECT * FROM produtos";
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+            model.setRowCount(0);
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                        rs.getLong("id"),
+                        rs.getString("nome"),
+                        rs.getInt("valor"),
+                        rs.getString("status")
+                });
+            }
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Erro ao carregar dados: " + e.getMessage());
+    }
+}
+    
     /**
      * @param args the command line arguments
      */
